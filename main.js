@@ -20,21 +20,41 @@ function goClicked(e) {
     method: 'GET'
   })
 
-    .success(function(data){
+  .success(function(data){
     console.log(data);
-    var cam1 = data.webcams[0].CURRENTIMAGEURL;
-    var cam2 = data.webcams[1].CURRENTIMAGEURL;
-    var cam3 = data.webcams[2].CURRENTIMAGEURL;
-    var cam4 = data.webcams[3].CURRENTIMAGEURL;
-    var cam5 = data.webcams[4].CURRENTIMAGEURL;
-    var cam6 = data.webcams[5].CURRENTIMAGEURL;
-    $('#webcam1').attr('src', cam1)
-    $('#webcam2').attr('src', cam2)
-    $('#webcam3').attr('src', cam3)
-    $('#webcam4').attr('src', cam4)
-    $('#webcam5').attr('src', cam5)
-    $('#webcam6').attr('src', cam6)
-    $('table').attr('class', "show");
+    console.log('city:', $inputCS[0]);
+
+
+    var webcams = data.webcams.filter(function(webcam){
+      console.log(webcam.city);
+      return webcam.city === $inputCS[0];
+    });
+
+    var $tds = [];
+
+    if(!webcams.length){
+      webcams = data.webcams;
+    }
+
+    for(var i = 0; i < 6; i++) {
+      var $img = $('<img>');
+      $img.addClass('camframes');
+      $img.attr('alt', 'webcam');
+      var index = Math.floor(Math.random() * webcams.length)
+      $img.attr('src', webcams[index].CURRENTIMAGEURL);
+
+      var $td = $('<td>');
+      $td.append($img);
+      $tds.push($td);
+    }
+
+    var $secondTds = $tds.splice(3);
+
+    var $tr1 = $('<tr>').append($tds);
+    var $tr2 = $('<tr>').append($secondTds);
+
+    $('#tableBody').append($tr1, $tr2);
+    $('.hidden').removeClass('hidden');
 
   })
   .fail(function(error) {
